@@ -21,7 +21,7 @@ bool startCAN(int CS_PIN, long baudRate, Adafruit_MCP2515 &MCP){
 }
 
 //Attempts to configure and start RFM95 LoRa Chip
-bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower){
+bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower, uint8_t codingRate, int bandwidth, uint8_t ID){
   
   
   for(int x = 0; x < 10; x++){
@@ -36,6 +36,9 @@ bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower){
       RF95.setFrequency(freq);
       RF95.setSpreadingFactor(spreadFactor);
       RF95.setTxPower(TxPower);
+      RF95.setCodingRate4(codingRate);
+      RF95.setSignalBandwidth(bandwidth);
+      RF95.setHeaderFrom(ID);
 
       return true;
     }
@@ -119,7 +122,7 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     if(Lambda > 32767){                      //signed int convserion
       Lambda = Lambda - 65536;
     }
-    for(int x = 0; x < 8; x++){
+    for(int x = 0; x < 6; x++){
       buff[x+8] = MCPBuf[x];
     }
 
@@ -133,18 +136,18 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
       OilPressure = OilPressure - 65536;
     }
      for(int x = 0; x < 8; x++){
-      buff[x+16] = MCPBuf[x];
+      buff[x+14] = MCPBuf[x];
     }
   }
   else if (ID == 0x0CFFF348) {
     for(int x = 0; x < 8; x++){
-      buff[x+24] = MCPBuf[x];
+      buff[x+22] = MCPBuf[x];
     }
   }
   
   else if (ID == 0x0CFFF448) {
     for(int x = 0; x < 8; x++){
-      buff[x+32] = MCPBuf[x];
+      buff[x+30] = MCPBuf[x];
     }
   }
 
@@ -160,8 +163,8 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
       EngineCoolant = EngineCoolant - 65536;
     }
 
-    for(int x = 0; x < 8; x++){
-      buff[x+40] = MCPBuf[x];
+    for(int x = 0; x < 6; x++){
+      buff[x+38] = MCPBuf[x];
     }
   }
 }

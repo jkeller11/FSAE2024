@@ -18,9 +18,12 @@
 #define RFM95_INT 21
 #define RFM95_RST 17
 #define RFM95_FREQ 915.0
-#define RFM95_SPREADFACTOR 7  // Spreading Factor Maxx is 12 any higher than 10 does not seem to function
+#define RFM95_CODINGRATE 5
+#define RFM95_BANDWIDTH 250000
+#define RFM95_HeaderID 0x22
+#define RFM95_SPREADFACTOR 8  // Spreading Factor Maxx is 12 any higher than 10 does not seem to function
 #define RFM95_TXPOWER 23       //23 is max any higher than 13 can cause serial connection to not work properly
-#define buffSize 54
+#define buffSize 50
 
 byte LoRaBuff[buffSize];
 float RPM, BattVoltage, Lambda, OilPressure, EngineCoolant = 0;
@@ -45,7 +48,7 @@ void setup() {
 
   while (!startCAN(CAN_CS, CAN_BAUDRATE, MCP)) {while (1);}
 
-  while (!startLoRa(RFM95_FREQ, RF95, RFM95_SPREADFACTOR, RFM95_TXPOWER)) {while (1);}
+  while (!startLoRa(RFM95_FREQ, RF95, RFM95_SPREADFACTOR, RFM95_TXPOWER, RFM95_CODINGRATE, RFM95_BANDWIDTH, RFM95_HeaderID)) {while (1);}
 
   while (!startADXL345(ACCEL)) {while (1);}
 }
@@ -68,6 +71,9 @@ void loop() {
     }
 
     //Sends LoRaBuff Array to raspberry PI
+    //sendLoRa(LoRaBuff, RF95, buffSize);
+
+    //Sends LoRaBuff Array to raspberry PI Comment out for normal use
     if (!sendLoRa(LoRaBuff, RF95, buffSize)) {
       Serial.println("Faild to Send");
     } else {
@@ -75,7 +81,4 @@ void loop() {
       Serial.print("Time:"); Serial.println(millis() - StartTime);
     }
   }
-  
-  //printADXL345(ACCEL);
-
 }
