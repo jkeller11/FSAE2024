@@ -6,7 +6,7 @@
 
 </p>
 
-![Downloads](https://img.shields.io/github/downloads/Jkeller11/FSAE2024/total) ![License](https://img.shields.io/github/license/Jkeller11/FSAE2024) 
+![License](https://img.shields.io/github/license/Jkeller11/FSAE2024) 
 
 ## About The Project
 
