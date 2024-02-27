@@ -21,7 +21,7 @@ bool startCAN(int CS_PIN, long baudRate, Adafruit_MCP2515 &MCP){
 }
 
 //Attempts to configure and start RFM95 LoRa Chip
-bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower, uint8_t codingRate, int bandwidth, uint8_t ID){
+bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower, uint8_t codingRate, int bandwidth, int ID){
   
   
   for(int x = 0; x < 10; x++){

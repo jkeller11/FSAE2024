@@ -18,7 +18,7 @@
 #define RFM95_INT 21
 #define RFM95_RST 17
 #define RFM95_FREQ 915.0
-#define RFM95_CODINGRATE 5
+#define RFM95_CODINGRATE 8
 #define RFM95_BANDWIDTH 250000
 #define RFM95_HeaderID 0x22
 #define RFM95_SPREADFACTOR 8  // Spreading Factor Maxx is 12 any higher than 10 does not seem to function
