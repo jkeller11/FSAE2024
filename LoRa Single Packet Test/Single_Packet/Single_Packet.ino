@@ -28,16 +28,21 @@ void setup() {
 
 void loop() {
   
-  for(int x = 0; x <= 100; x++){
+  for(int x = 0; x <= 200; x++){
     if (!sendLoRaTestData(x, RF95, buffSize)) {
-    Serial.println("Faild to Send");
+      Serial.println("Faild to Send");
     } 
     else {
-      Serial.println("Packet to Sent");
-    }
-    delay(250);
+      delay(250);
+    }  
   }
 
-  Serial.print("Done");
-  while(1);
+ for(int x = 200; x >= 0; x--){
+    if (!sendLoRaTestData(x, RF95, buffSize)) {
+      Serial.println("Faild to Send");
+    } 
+    else {
+      delay(250);
+    }
+ }   
 }
