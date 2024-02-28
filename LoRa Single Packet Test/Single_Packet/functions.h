@@ -65,3 +65,37 @@ bool sendLoRaTestData(int value, RH_RF95 &RF95, int buffSize){
   
   return RF95.send((uint8_t*)buff, buffSize);
 }
+
+//Attempts to configure and start ADX345
+bool startADXL345(Adafruit_ADXL345_Unified &ACCEL){
+  for(int x = 0; x < 10; x++){
+    if (!ACCEL.begin()) {
+      Serial.println("ADXL345 initialization failed");
+      delay(1000);
+    }
+    else{
+      Serial.println("ADXL345 initialization Successful");
+
+      //Set G Range for ADX345
+      ACCEL.setRange(ADXL345_RANGE_16_G);
+      return true;
+    }
+  }
+  Serial.println("ADXL345 Not Found");
+  return false;
+}
+
+//Reads Accelerometer data and store it in the array parameter
+void readADXL345(byte buff[], Adafruit_ADXL345_Unified &ACCEL){
+   // Get a new sensor event // 
+  sensors_event_t event; 
+  ACCEL.getEvent(&event);
+
+  //Convert and push accerlation values to LoRa Buffer Array
+  buff[44] = byte(int(event.acceleration.x*100) & 0xFF); //LSB first
+  buff[45] = byte(int(event.acceleration.x*100) >> 8); //MSB second
+  buff[46] = byte(int(event.acceleration.y*100) & 0xFF); //LSB first
+  buff[47] = byte(int(event.acceleration.y*100) >> 8); //MSB second
+  buff[48] = byte(int(event.acceleration.z*100) & 0xFF); //LSB first
+  buff[49] = byte(int(event.acceleration.z*100) >> 8); //MSB second
+}
