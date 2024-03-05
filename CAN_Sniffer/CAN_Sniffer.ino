@@ -54,9 +54,6 @@ void setup() {
 }
 
 void loop() {
-
- unsigned long StartTime = millis();
-
   //For Data collection switch on dashboard
   if(digitalRead(12) == LOW){
     //Reads Accelerometer data and store it in the array
@@ -73,6 +70,7 @@ void loop() {
     //Sends LoRaBuff Array to raspberry PI
     //sendLoRa(LoRaBuff, RF95, buffSize);
 
+    unsigned long StartTime = millis();
     //Sends LoRaBuff Array to raspberry PI Comment out for normal use
     if (!sendLoRa(LoRaBuff, RF95, buffSize)) {
       Serial.println("Faild to Send");

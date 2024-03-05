@@ -58,7 +58,7 @@ bool startADXL345(Adafruit_ADXL345_Unified &ACCEL){
       Serial.println("ADXL345 initialization Successful");
 
       //Set G Range for ADX345
-      ACCEL.setRange(ADXL345_RANGE_16_G);
+      ACCEL.setRange(ADXL345_RANGE_8_G);
       return true;
     }
   }
@@ -86,12 +86,12 @@ void readADXL345(byte buff[], Adafruit_ADXL345_Unified &ACCEL){
   ACCEL.getEvent(&event);
 
   //Convert and push accerlation values to LoRa Buffer Array
-  buff[48] = byte(int(event.acceleration.x*100) & 0xFF); //LSB first
-  buff[49] = byte(int(event.acceleration.x*100) >> 8); //MSB second
-  buff[50] = byte(int(event.acceleration.y*100) & 0xFF); //LSB first
-  buff[51] = byte(int(event.acceleration.y*100) >> 8); //MSB second
-  buff[52] = byte(int(event.acceleration.z*100) & 0xFF); //LSB first
-  buff[53] = byte(int(event.acceleration.z*100) >> 8); //MSB second
+  buff[44] = byte(int(event.acceleration.x*100) & 0xFF); //LSB first
+  buff[45] = byte(int(event.acceleration.x*100) >> 8); //MSB second
+  buff[46] = byte(int(event.acceleration.y*100) & 0xFF); //LSB first
+  buff[47] = byte(int(event.acceleration.y*100) >> 8); //MSB second
+  buff[48] = byte(int(event.acceleration.z*100) & 0xFF); //LSB first
+  buff[49] = byte(int(event.acceleration.z*100) >> 8); //MSB second
 }
 
 //Prints out last recevied CAN packet ID for debugging

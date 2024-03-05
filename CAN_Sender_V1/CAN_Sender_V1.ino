@@ -17,7 +17,8 @@ byte canMsg4[8] = {byte(13 & 0xFF), byte(13 >> 8), byte(14 & 0xFF), byte(14 >> 8
 byte canMsg5[8] = {byte(17 & 0xFF), byte(17 >> 8), byte(18 & 0xFF), byte(18 >> 8), byte(19 & 0xFF), byte(19 >> 8), byte(20 & 0xFF), byte(20 >> 8)};
 byte canMsg6[8] = {byte(21 & 0xFF), byte(21 >> 8), byte(22 & 0xFF), byte(22 >> 8), byte(23 & 0xFF), byte(23 >> 8), byte(24 & 0xFF), byte(24 >> 8)};
 
-MCP_CAN CAN0(SPI_PIN);                                                     
+MCP_CAN CAN0(SPI_PIN);
+
 
 void setup() {
   Serial.begin(9600);                                                     //Arduino comm with PC
@@ -48,11 +49,22 @@ void loop() {
   //See PE3 CAN Bus Protocol for info on IDs and data
   //CAN message data values scaled acording to resolution 
   //EX analog #1 is 0 to 5 but with a resolution of 0.001 so 5123 would be 5.123
-  CAN0.sendMsgBuf(PE1, 1, 8, canMsg1);                 //RPM,TPS,Fuel Open Time and Ignition Angle                          
-  CAN0.sendMsgBuf(PE2, 1, 8, canMsg2);                 //Barometer, MAP, Lambda and Pressure Type
-  CAN0.sendMsgBuf(PE3, 1, 8, canMsg3);                 //Analog Inputs 1-4
-  CAN0.sendMsgBuf(PE4, 1, 8, canMsg4);                 //Analog Inputs 5-8
-  CAN0.sendMsgBuf(PE5, 1, 8, canMsg5);                 //Wheel Speed Freq 1-4
-  CAN0.sendMsgBuf(PE6, 1, 8, canMsg6);                 //Battery Voltage, Air Temp, Coolant Temp and Temp Type
+  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg1);                 //RPM,TPS,Fuel Open Time and Ignition Angle                          
+  // CAN0.sendMsgBuf(PE2, 1, 8, canMsg2);                 //Barometer, MAP, Lambda and Pressure Type
+  // CAN0.sendMsgBuf(PE3, 1, 8, canMsg3);                 //Analog Inputs 1-4
+  // CAN0.sendMsgBuf(PE4, 1, 8, canMsg4);                 //Analog Inputs 5-8
+  // CAN0.sendMsgBuf(PE5, 1, 8, canMsg5);                 //Wheel Speed Freq 1-4
+  // CAN0.sendMsgBuf(PE6, 1, 8, canMsg6);                 //Battery Voltage, Air Temp, Coolant Temp and Temp Type
+  // delay(100);
+
+  //Test Pot send data
+  int sensorValue = analogRead(A0);
+  float voltage = sensorValue * (5.0 / 1023.0);
+  byte pot[8] = {0, 0, 0, 0, 0, 0, byte(sensorValue & 0xFF), byte(sensorValue >> 8)};
+  CAN0.sendMsgBuf(PE4, 1, 8, pot);
+  Serial.println(voltage);
   delay(100);
+
+
+
 }
