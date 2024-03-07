@@ -101,6 +101,7 @@ void printCANID(Adafruit_MCP2515 &MCP){
 }
 
 //Reads CAN data for dash data and store it in the array parameter
+//Also Sets Neopixels when value is Set
 void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage, float &Lambda, float &OilPressure, float &EngineCoolant, int packetSize){
   byte MCPBuf[8]; //Temp buffer array
 
@@ -215,3 +216,108 @@ bool sendLoRaTestData(int position, int value, RH_RF95 &RF95, int buffSize){
     return false;
   }
 }
+
+//Sets color on Neopixel Stick
+void SetSTICK(float rpm){
+  // Set all pixel colors to 'off'
+  STICK.clear(); 
+
+  //Calculate number of LEDS to turn on
+  rpm = (rpm - 1800) / 1300;
+
+  //Sets Neopixels on Stick based on RPM value
+  for(int x = 0; x <= rpm; x++){
+    STICK.setPixelColor(x, STICK.Color(255, 0, 0));
+  }
+  
+  // Send the updated pixel colors to the hardware
+  STICK.show(); 
+}
+
+//Sets color on Standard Neopixel
+//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
+void SetNEO_BATTERY(float val){
+  int neoLED = 0; //Index of chained Neopixels
+  val = val/100;  //Calc real value read from CAN
+
+  if(val >= 12){
+    NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
+  }
+  else if(val >= 11.8){
+    NEO.setPixelColor(neoLED, NEO.Color(255, 172, 28));
+  }
+  else{
+    NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
+  }
+
+  NEO.show();
+}
+
+//Sets color on Standard Neopixel
+//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
+void SetNEO_OIL(float val){
+  int neoLED = 1; //Index of chained Neopixels
+  val = ((val/1000) * 25) - 12.5;  //Calc real value read from CAN and convert to PSI
+
+  if(val >= 10){
+    NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
+  }
+  else{
+    NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
+  }
+  NEO.show();
+}
+
+//Sets color on Standard Neopixel
+//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
+void SetNEO_COOLANT(float val){
+  int neoLED = 2; //Index of chained Neopixels
+  val = val/10;  //Calc real value read from CAN
+
+  if(val > 190){
+    NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
+  }
+  else if(val >= 150){
+    NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
+  }
+  else{
+    NEO.setPixelColor(neoLED, NEO.Color(0, 0, 255));
+  }
+  NEO.show(); 
+}
+
+//TO DO GET REAL LAMBDA VALS
+//Sets color on Standard Neopixel
+//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
+void SetNEO_LAMBDA(float val){
+  int neoLED = 4; //Index of chained Neopixels
+  val = val/100;  //Calc real value read from CAN
+
+  if(val > 1.01){
+    NEO.setPixelColor(neoLED, NEO.Color(255, 172, 28));
+  }
+  else if(val >= 0.98){
+    NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
+  }
+  else{
+    NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
+  }
+  NEO.show();
+}
+
+//Sets color on Standard Neopixel
+//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
+void SetNEO_NEUTRAL(bool val){
+  int neoLED = 3; //Index of chained Neopixels
+
+  if(val){
+    NEO.setPixelColor(neoLED, NEO.Color(0, 0, 255));
+  }
+  else{
+    NEO.setPixelColor(neoLED, NEO.Color(0, 0, 0));
+  }
+
+  NEO.show();
+}
+
+

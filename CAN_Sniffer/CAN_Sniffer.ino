@@ -1,13 +1,12 @@
-//TODO LOG
-//Add dashboard code
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info on program specifics
 #include <Adafruit_MCP2515.h>
-#include <SPI.h>
-#include <RH_RF95.h>
-#include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_ADXL345_U.h>
-#include "functions.h"
+#include <Adafruit_NeoPixel.h>
+#include <SPI.h>
+#include <Wire.h>
+#include <RH_RF95.h>
+#include "functions.h"   //custom functions to clean up code
 
 //MCP2515 Parameters
 #define CAN_BAUDRATE (250000)  // Set CAN bus baud rate
@@ -17,15 +16,22 @@
 #define RFM95_CS 16
 #define RFM95_INT 21
 #define RFM95_RST 17
-#define RFM95_FREQ 915.0
+#define RFM95_FREQ 915.0          
 #define RFM95_CODINGRATE 8
 #define RFM95_BANDWIDTH 250000
-#define RFM95_HeaderID 0x22
-#define RFM95_SPREADFACTOR 8  // Spreading Factor Maxx is 12 any higher than 10 does not seem to function
-#define RFM95_TXPOWER 23       //23 is max any higher than 13 can cause serial connection to not work properly
-#define buffSize 50
+#define RFM95_HeaderID 0x22     //ID that Raspi Will check for when reading packet
+#define RFM95_SPREADFACTOR 8    //Spreading Factor Maxx is 12 any higher than 10 does not seem to function
+#define RFM95_TXPOWER 23        //23 is max any higher than 13 can cause serial connection to not work properly
+#define buffSize 50             //Size of LoRa packet -- Array of bytes
 
-byte LoRaBuff[buffSize];
+//Neopixel Parameters
+#define STICK_NUM 8
+#define STICK_PIN 6
+#define NEO_NUM 5
+#define NEO_PIN 24
+
+//Global Variables for lora array and Dash Values
+byte LoRaBuff[buffSize]; //LoRa Packets
 float RPM, BattVoltage, Lambda, OilPressure, EngineCoolant = 0;
 
 //Create MCP object
@@ -37,19 +43,29 @@ RH_RF95 RF95(RFM95_CS, RFM95_INT);
 //Create ADXL345 object and assign dummy ID (unused)
 Adafruit_ADXL345_Unified ACCEL = Adafruit_ADXL345_Unified(12345);
 
+//Create Neopixel Objects
+Adafruit_NeoPixel STICK(STICK_NUM, STICK_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel NEO(NEO_NUM, NEO_PIN, NEO_GRB + NEO_KHZ800);
+
 void setup() {
   //Pins for checking if data collection is 'ON'
   pinMode(13,OUTPUT);
   pinMode(12,INPUT_PULLUP);
   digitalWrite(13, LOW);
 
+  // INITIALIZE NeoPixel objects
+  STICK.begin();
+  NEO.begin();
+
+  //Set Neopixels Max Brightness to 50%
+  STICK.setBrightness(50);
+  NEO.setBrightness(50);
+
+  //Start Serial, MCP2515 (CAN), ADXL345 (Accelerometer), RFM95 (LoRa)
   Serial.begin(115200);
   while (!Serial) delay(10);
-
   while (!startCAN(CAN_CS, CAN_BAUDRATE, MCP)) {while (1);}
-
   while (!startLoRa(RFM95_FREQ, RF95, RFM95_SPREADFACTOR, RFM95_TXPOWER, RFM95_CODINGRATE, RFM95_BANDWIDTH, RFM95_HeaderID)) {while (1);}
-
   while (!startADXL345(ACCEL)) {while (1);}
 }
 
@@ -63,20 +79,21 @@ void loop() {
     int packetSize = MCP.parsePacket();
 
     if (packetSize) {
-      // received a packet read and add to LoRaBuff
+      // received a packet read and add to LoRaBuff as well as set neopixels
       readCAN(LoRaBuff, MCP, RPM, BattVoltage, Lambda, OilPressure, EngineCoolant, packetSize);
     }
 
     //Sends LoRaBuff Array to raspberry PI
-    //sendLoRa(LoRaBuff, RF95, buffSize);
+    sendLoRa(LoRaBuff, RF95, buffSize);
 
-    unsigned long StartTime = millis();
-    //Sends LoRaBuff Array to raspberry PI Comment out for normal use
-    if (!sendLoRa(LoRaBuff, RF95, buffSize)) {
-      Serial.println("Faild to Send");
-    } else {
-      //Serial.println("Packet Sent");
-      Serial.print("Time:"); Serial.println(millis() - StartTime);
-    }
+    //For Debugging execution Time
+    // unsigned long StartTime = millis();
+    // //Sends LoRaBuff Array to raspberry PI Comment out for normal use
+    // if (!sendLoRa(LoRaBuff, RF95, buffSize)) {
+    //   Serial.println("Faild to Send");
+    // } else {
+    //   //Serial.println("Packet Sent");
+    //   Serial.print("Time:"); Serial.println(millis() - StartTime);
+    // }
   }
 }
