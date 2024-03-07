@@ -32,7 +32,7 @@
 
 //Global Variables for lora array and Dash Values
 byte LoRaBuff[buffSize]; //LoRa Packets
-float RPM, BattVoltage, Lambda, OilPressure, EngineCoolant = 0;
+float RPM, BattVoltage, OilPressure, EngineCoolant = 0;
 
 //Create MCP object
 Adafruit_MCP2515 MCP(CAN_CS);
@@ -48,10 +48,11 @@ Adafruit_NeoPixel STICK(STICK_NUM, STICK_PIN, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel NEO(NEO_NUM, NEO_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
-  //Pins for checking if data collection is 'ON'
+  //Pins for checking if data collection is 'ON' and neutral light
   pinMode(13,OUTPUT);
   pinMode(12,INPUT_PULLUP);
   digitalWrite(13, LOW);
+  pinMode(10,INPUT_PULLUP);
 
   // INITIALIZE NeoPixel objects
   STICK.begin();
@@ -70,18 +71,22 @@ void setup() {
 }
 
 void loop() {
+
+  //Turns on Neutral Light if Pin 10 is pulled to ground
+  SetNEO_NEUTRAL(digitalRead(10), NEO);
+
+  // Check for new CAN packet
+  int packetSize = MCP.parsePacket();
+
+  if(packetSize){
+    // received a packet read and add to LoRaBuff as well as set neopixels
+    readCAN(LoRaBuff, MCP, RPM, BattVoltage, OilPressure, EngineCoolant, packetSize, NEO, STICK);
+  }
+
   //For Data collection switch on dashboard
   if(digitalRead(12) == LOW){
     //Reads Accelerometer data and store it in the array
     readADXL345(LoRaBuff, ACCEL);
-
-    // Check for new CAN packet
-    int packetSize = MCP.parsePacket();
-
-    if (packetSize) {
-      // received a packet read and add to LoRaBuff as well as set neopixels
-      readCAN(LoRaBuff, MCP, RPM, BattVoltage, Lambda, OilPressure, EngineCoolant, packetSize);
-    }
 
     //Sends LoRaBuff Array to raspberry PI
     sendLoRa(LoRaBuff, RF95, buffSize);

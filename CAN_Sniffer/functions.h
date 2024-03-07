@@ -102,7 +102,7 @@ void printCANID(Adafruit_MCP2515 &MCP){
 
 //Reads CAN data for dash data and store it in the array parameter
 //Also Sets Neopixels when value is Set
-void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage, float &Lambda, float &OilPressure, float &EngineCoolant, int packetSize){
+void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage, float &OilPressure, float &EngineCoolant, int packetSize, Adafruit_NeoPixel &NEO, Adafruit_NeoPixel &STICK){
   byte MCPBuf[8]; //Temp buffer array
 
   MCP.readBytes(MCPBuf, packetSize);      // Parse packetsize of bytes into MCPBuf STORED [LowByte, HighByte]
@@ -111,42 +111,66 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
   //RPM
   if (ID == 0x0CFFF048) { 
     RPM = (MCPBuf[1] << 8) + MCPBuf[0];  //Parse RPM for tachometer
-   
+    
+    //Sets Neopixel Stick based on New RPM Value
+    STICK.clear(); // Set all pixel colors to 'off'
+
+    //Calculate number of LEDS to turn on
+    float rpm = (RPM - 1800) / 1300;
+
+    //Sets Neopixels on Stick based on RPM value
+    for(int x = 0; x <= rpm; x++){
+      STICK.setPixelColor(x, STICK.Color(255, 0, 0));
+    }
+    
+    // Send the updated pixel colors to the hardware
+    STICK.show(); 
+    
+    //Puts byte values into LoRa array
     for(int x = 0; x < 8; x++){
       buff[x] = MCPBuf[x];
     }
   }
-
-  //Lambda
   else if (ID == 0x0CFFF148) { 
-    Lambda = (MCPBuf[5] << 8) + MCPBuf[4];  
-    if(Lambda > 32767){                      //signed int convserion
-      Lambda = Lambda - 65536;
-    }
+    //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
       buff[x+8] = MCPBuf[x];
     }
-
   }
-
-  //Oil Pressure
+  
   else if (ID == 0x0CFFF248) {
-    //Set Values 
     OilPressure = (MCPBuf[1] << 8) + MCPBuf[0];  
     if(OilPressure > 32767){                      //signed int convserion
       OilPressure = OilPressure - 65536;
     }
-     for(int x = 0; x < 8; x++){
+
+    //Sets Neopixel based on new value
+    int neoLED = 1; //Index of chained Neopixel
+    float val = ((OilPressure/1000) * 25) - 12.5;  //Calc real value read from CAN and convert to PSI
+
+    if(val >= 10){
+      NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
+    }
+    else{
+      NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
+    }
+    NEO.show();
+    
+    //Puts byte values into LoRa array
+    for(int x = 0; x < 8; x++){
       buff[x+14] = MCPBuf[x];
     }
   }
+  
   else if (ID == 0x0CFFF348) {
+    //Puts byte values into LoRa array
     for(int x = 0; x < 8; x++){
       buff[x+22] = MCPBuf[x];
     }
   }
   
   else if (ID == 0x0CFFF448) {
+    //Puts byte values into LoRa array
     for(int x = 0; x < 8; x++){
       buff[x+30] = MCPBuf[x];
     }
@@ -159,11 +183,41 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
       BattVoltage = BattVoltage - 65536;
     }
 
+    //Sets Neopixel based on new value
+    int neoLED = 0; //Index of chained Neopixel
+    float val = BattVoltage/100;  //Calc real value read from CAN
+
+    if(val >= 12){
+      NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
+    }
+    else if(val >= 11.8){
+      NEO.setPixelColor(neoLED, NEO.Color(255, 172, 28));
+    }
+    else{
+      NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
+    }
+
     EngineCoolant = (MCPBuf[5] << 8) + MCPBuf[4];  
     if(EngineCoolant > 32767){                      //signed int convserion
       EngineCoolant = EngineCoolant - 65536;
     }
 
+    //Sets Neopixel based on new value
+    neoLED = 2; //Index of chained Neopixel
+    val = EngineCoolant/10;  //Calc real value read from CAN
+
+    if(val > 190){
+      NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
+    }
+    else if(val >= 150){
+      NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
+    }
+    else{
+      NEO.setPixelColor(neoLED, NEO.Color(0, 0, 255));
+    }
+    NEO.show(); 
+
+    //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
       buff[x+38] = MCPBuf[x];
     }
@@ -217,100 +271,12 @@ bool sendLoRaTestData(int position, int value, RH_RF95 &RF95, int buffSize){
   }
 }
 
-//Sets color on Neopixel Stick
-void SetSTICK(float rpm){
-  // Set all pixel colors to 'off'
-  STICK.clear(); 
-
-  //Calculate number of LEDS to turn on
-  rpm = (rpm - 1800) / 1300;
-
-  //Sets Neopixels on Stick based on RPM value
-  for(int x = 0; x <= rpm; x++){
-    STICK.setPixelColor(x, STICK.Color(255, 0, 0));
-  }
-  
-  // Send the updated pixel colors to the hardware
-  STICK.show(); 
-}
-
 //Sets color on Standard Neopixel
 //See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
-void SetNEO_BATTERY(float val){
-  int neoLED = 0; //Index of chained Neopixels
-  val = val/100;  //Calc real value read from CAN
-
-  if(val >= 12){
-    NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
-  }
-  else if(val >= 11.8){
-    NEO.setPixelColor(neoLED, NEO.Color(255, 172, 28));
-  }
-  else{
-    NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
-  }
-
-  NEO.show();
-}
-
-//Sets color on Standard Neopixel
-//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
-void SetNEO_OIL(float val){
-  int neoLED = 1; //Index of chained Neopixels
-  val = ((val/1000) * 25) - 12.5;  //Calc real value read from CAN and convert to PSI
-
-  if(val >= 10){
-    NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
-  }
-  else{
-    NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
-  }
-  NEO.show();
-}
-
-//Sets color on Standard Neopixel
-//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
-void SetNEO_COOLANT(float val){
-  int neoLED = 2; //Index of chained Neopixels
-  val = val/10;  //Calc real value read from CAN
-
-  if(val > 190){
-    NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
-  }
-  else if(val >= 150){
-    NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
-  }
-  else{
-    NEO.setPixelColor(neoLED, NEO.Color(0, 0, 255));
-  }
-  NEO.show(); 
-}
-
-//TO DO GET REAL LAMBDA VALS
-//Sets color on Standard Neopixel
-//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
-void SetNEO_LAMBDA(float val){
-  int neoLED = 4; //Index of chained Neopixels
-  val = val/100;  //Calc real value read from CAN
-
-  if(val > 1.01){
-    NEO.setPixelColor(neoLED, NEO.Color(255, 172, 28));
-  }
-  else if(val >= 0.98){
-    NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
-  }
-  else{
-    NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
-  }
-  NEO.show();
-}
-
-//Sets color on Standard Neopixel
-//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
-void SetNEO_NEUTRAL(bool val){
+void SetNEO_NEUTRAL(bool val, Adafruit_NeoPixel &NEO){
   int neoLED = 3; //Index of chained Neopixels
 
-  if(val){
+  if(!val){
     NEO.setPixelColor(neoLED, NEO.Color(0, 0, 255));
   }
   else{
