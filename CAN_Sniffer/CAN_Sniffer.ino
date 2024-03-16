@@ -9,10 +9,12 @@
 #include "functions.h"   //custom functions to clean up code
 
 //MCP2515 Parameters
+//See Adafruit_MCP2515 library for more info
 #define CAN_BAUDRATE (250000)  // Set CAN bus baud rate
 #define CAN_CS 5               //Set CS pin
 
 //RFM95 Setup Parameters
+//See RadioHead library for more info
 #define RFM95_CS 16
 #define RFM95_INT 21
 #define RFM95_RST 17
@@ -22,9 +24,10 @@
 #define RFM95_HeaderID 0x22     //ID that Raspi Will check for when reading packet
 #define RFM95_SPREADFACTOR 8    //Spreading Factor Maxx is 12 any higher than 10 does not seem to function
 #define RFM95_TXPOWER 23        //23 is max any higher than 13 can cause serial connection to not work properly
-#define buffSize 50             //Size of LoRa packet -- Array of bytes
+#define buffSize 56             //Size of LoRa packet -- Array of bytes
 
 //Neopixel Parameters
+//See Neopixel library for more info
 #define STICK_NUM 8
 #define STICK_PIN 6
 #define NEO_NUM 5
@@ -78,7 +81,8 @@ void loop() {
   // Check for new CAN packet
   int packetSize = MCP.parsePacket();
 
-  if(packetSize){
+  //Filters packets and ignores irennous packets
+  if((packetSize && (MCP.packetId() & 0x00000800 == 0x00000000)) || (packetSize && (MCP.packetId() == 0x0CFFF848))){
     // received a packet read and add to LoRaBuff as well as set neopixels
     readCAN(LoRaBuff, MCP, RPM, BattVoltage, OilPressure, EngineCoolant, packetSize, NEO, STICK);
   }
@@ -101,4 +105,5 @@ void loop() {
     //   Serial.print("Time:"); Serial.println(millis() - StartTime);
     // }
   }
+  
 }

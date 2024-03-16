@@ -2,7 +2,8 @@
 bool startCAN(int CS_PIN, long baudRate, Adafruit_MCP2515 &MCP){
 
   //Set MCP filter for the IDs used acording to PE3 Documentation on CAN Protocl
-  MCP.filterExtended(0x0000F000,0x0000F800);
+  // Checks if 12th bit is zero or allows values < 7
+  //MCP.filterExtended(0x0000000,0x00000800); //Depreciated with addition of packet PE9
 
   //Attempts start 10 times until timeout
   for(int x = 0; x < 10; x++){
@@ -222,6 +223,11 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
       buff[x+38] = MCPBuf[x];
     }
   }
+  else if(ID== 0x0CFFF848)
+  //Puts byte values into LoRa array
+    for(int x = 0; x < 6; x++){
+      buff[x+50] = MCPBuf[x];
+    }
 }
 
 //Sends LoRaBuff to raspberry PI
