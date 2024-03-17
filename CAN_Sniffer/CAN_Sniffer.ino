@@ -66,8 +66,8 @@ void setup() {
   NEO.setBrightness(50);
 
   //Start Serial, MCP2515 (CAN), ADXL345 (Accelerometer), RFM95 (LoRa)
-  Serial.begin(115200);
-  while (!Serial) delay(10);
+  Serial.begin(9600);
+  //while (!Serial) delay(1000);
   while (!startCAN(CAN_CS, CAN_BAUDRATE, MCP)) {while (1);}
   while (!startLoRa(RFM95_FREQ, RF95, RFM95_SPREADFACTOR, RFM95_TXPOWER, RFM95_CODINGRATE, RFM95_BANDWIDTH, RFM95_HeaderID)) {while (1);}
   while (!startADXL345(ACCEL)) {while (1);}
@@ -76,7 +76,7 @@ void setup() {
 void loop() {
 
   //Turns on Neutral Light if Pin 10 is pulled to ground
-  SetNEO_NEUTRAL(digitalRead(10), NEO);
+  //SetNEO_NEUTRAL(digitalRead(10), NEO);
 
   // Check for new CAN packet
   int packetSize = MCP.parsePacket();
@@ -84,7 +84,7 @@ void loop() {
   //Filters packets and ignores irennous packets
   if((packetSize && (MCP.packetId() & 0x00000800 == 0x00000000)) || (packetSize && (MCP.packetId() == 0x0CFFF848))){
     // received a packet read and add to LoRaBuff as well as set neopixels
-    readCAN(LoRaBuff, MCP, RPM, BattVoltage, OilPressure, EngineCoolant, packetSize, NEO, STICK);
+    //readCAN(LoRaBuff, MCP, RPM, BattVoltage, OilPressure, EngineCoolant, packetSize, NEO, STICK);
   }
 
   //For Data collection switch on dashboard
@@ -94,6 +94,7 @@ void loop() {
 
     //Sends LoRaBuff Array to raspberry PI
     sendLoRa(LoRaBuff, RF95, buffSize);
+    Serial.println("Sent");
 
     //For Debugging execution Time
     // unsigned long StartTime = millis();
