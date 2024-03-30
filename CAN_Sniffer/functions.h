@@ -124,7 +124,7 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
       STICK.setPixelColor(x, STICK.Color(255, 0, 0));
     }
     
-    // Send the updated pixel colors to the hardware
+    // Send the updated pixel colors to the neopixel
     STICK.show(); 
     
     //Puts byte values into LoRa array

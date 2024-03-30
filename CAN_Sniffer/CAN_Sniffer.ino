@@ -62,8 +62,8 @@ void setup() {
   NEO.begin();
 
   //Set Neopixels Max Brightness to 50%
-  STICK.setBrightness(50);
-  NEO.setBrightness(50);
+  STICK.setBrightness(25);
+  NEO.setBrightness(25);
 
   //Start Serial, MCP2515 (CAN), ADXL345 (Accelerometer), RFM95 (LoRa)
   Serial.begin(9600);
@@ -76,7 +76,7 @@ void setup() {
 void loop() {
 
   //Turns on Neutral Light if Pin 10 is pulled to ground
-  //SetNEO_NEUTRAL(digitalRead(10), NEO);
+  SetNEO_NEUTRAL(digitalRead(10), NEO);
 
   // Check for new CAN packet
   int packetSize = MCP.parsePacket();
