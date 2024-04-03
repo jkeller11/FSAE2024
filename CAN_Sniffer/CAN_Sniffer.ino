@@ -24,14 +24,14 @@
 #define RFM95_HeaderID 0x22     //ID that Raspi Will check for when reading packet
 #define RFM95_SPREADFACTOR 8    //Spreading Factor Maxx is 12 any higher than 10 does not seem to function
 #define RFM95_TXPOWER 23        //23 is max any higher than 13 can cause serial connection to not work properly
-#define buffSize 56             //Size of LoRa packet -- Array of bytes
+#define buffSize 50             //Size of LoRa packet -- Array of bytes
 
 //Neopixel Parameters
 //See Neopixel library for more info
 #define STICK_NUM 8
 #define STICK_PIN 6
 #define NEO_NUM 5
-#define NEO_PIN 24
+#define NEO_PIN 25
 
 //Global Variables for lora array and Dash Values
 byte LoRaBuff[buffSize]; //LoRa Packets
@@ -81,10 +81,9 @@ void loop() {
   // Check for new CAN packet
   int packetSize = MCP.parsePacket();
 
-  //Filters packets and ignores irennous packets
-  if((packetSize && (MCP.packetId() & 0x00000800 == 0x00000000)) || (packetSize && (MCP.packetId() == 0x0CFFF848))){
+  if(packetSize){
     // received a packet read and add to LoRaBuff as well as set neopixels
-    //readCAN(LoRaBuff, MCP, RPM, BattVoltage, OilPressure, EngineCoolant, packetSize, NEO, STICK);
+    readCAN(LoRaBuff, MCP, RPM, BattVoltage, OilPressure, EngineCoolant, packetSize, NEO, STICK);
   }
 
   //For Data collection switch on dashboard
@@ -94,7 +93,7 @@ void loop() {
 
     //Sends LoRaBuff Array to raspberry PI
     sendLoRa(LoRaBuff, RF95, buffSize);
-    Serial.println("Sent");
+    //Serial.println("Sent");
 
     //For Debugging execution Time
     // unsigned long StartTime = millis();
