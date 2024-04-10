@@ -87,12 +87,12 @@ void readADXL345(byte buff[], Adafruit_ADXL345_Unified &ACCEL){
   ACCEL.getEvent(&event);
 
   //Convert and push accerlation values to LoRa Buffer Array
-  buff[44] = byte(int(event.acceleration.x*100) & 0xFF); //LSB first
-  buff[45] = byte(int(event.acceleration.x*100) >> 8); //MSB second
-  buff[46] = byte(int(event.acceleration.y*100) & 0xFF); //LSB first
-  buff[47] = byte(int(event.acceleration.y*100) >> 8); //MSB second
-  buff[48] = byte(int(event.acceleration.z*100) & 0xFF); //LSB first
-  buff[49] = byte(int(event.acceleration.z*100) >> 8); //MSB second
+  buff[38] = byte(int(event.acceleration.x*100) & 0xFF); //LSB first
+  buff[39] = byte(int(event.acceleration.x*100) >> 8); //MSB second
+  buff[40] = byte(int(event.acceleration.y*100) & 0xFF); //LSB first
+  buff[41] = byte(int(event.acceleration.y*100) >> 8); //MSB second
+  buff[42] = byte(int(event.acceleration.z*100) & 0xFF); //LSB first
+  buff[43] = byte(int(event.acceleration.z*100) >> 8); //MSB second
 }
 
 //Prints out last recevied CAN packet ID for debugging
@@ -128,19 +128,19 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     STICK.show(); 
     
     //Puts byte values into LoRa array
-    for(int x = 0; x < 8; x++){
+    for(int x = 0; x < 6; x++){
       buff[x] = MCPBuf[x];
     }
   }
   else if (ID == 0x0CFFF148) { 
     //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
-      buff[x+8] = MCPBuf[x];
+      buff[x+6] = MCPBuf[x];
     }
   }
   
   else if (ID == 0x0CFFF248) {
-    OilPressure = (MCPBuf[1] << 8) + MCPBuf[0];  
+    OilPressure = (MCPBuf[3] << 8) + MCPBuf[2];  
     if(OilPressure > 32767){                      //signed int convserion
       OilPressure = OilPressure - 65536;
     }
@@ -158,22 +158,22 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     NEO.show();
     
     //Puts byte values into LoRa array
-    for(int x = 0; x < 8; x++){
-      buff[x+14] = MCPBuf[x];
+    for(int x = 0; x < 6; x++){
+      buff[x+12] = MCPBuf[x+2];
     }
   }
   
   else if (ID == 0x0CFFF348) {
     //Puts byte values into LoRa array
-    for(int x = 0; x < 8; x++){
-      buff[x+22] = MCPBuf[x];
+    for(int x = 0; x < 6; x++){
+      buff[x+18] = MCPBuf[x];
     }
   }
   
   else if (ID == 0x0CFFF448) {
     //Puts byte values into LoRa array
     for(int x = 0; x < 8; x++){
-      buff[x+30] = MCPBuf[x];
+      buff[x+24] = MCPBuf[x];
     }
   }
 
@@ -220,7 +220,7 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
 
     //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
-      buff[x+38] = MCPBuf[x];
+      buff[x+32] = MCPBuf[x];
     }
   }
 }

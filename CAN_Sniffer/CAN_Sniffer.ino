@@ -24,7 +24,7 @@
 #define RFM95_HeaderID 0x22     //ID that Raspi Will check for when reading packet
 #define RFM95_SPREADFACTOR 8    //Spreading Factor Maxx is 12 any higher than 10 does not seem to function
 #define RFM95_TXPOWER 23        //23 is max any higher than 13 can cause serial connection to not work properly
-#define buffSize 50             //Size of LoRa packet -- Array of bytes
+#define buffSize 44             //Size of LoRa packet -- Array of bytes
 
 //Neopixel Parameters
 //See Neopixel library for more info
