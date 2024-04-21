@@ -87,12 +87,12 @@ void readADXL345(byte buff[], Adafruit_ADXL345_Unified &ACCEL){
   ACCEL.getEvent(&event);
 
   //Convert and push accerlation values to LoRa Buffer Array
-  buff[38] = byte(int(event.acceleration.x*100) & 0xFF); //LSB first
-  buff[39] = byte(int(event.acceleration.x*100) >> 8); //MSB second
-  buff[40] = byte(int(event.acceleration.y*100) & 0xFF); //LSB first
-  buff[41] = byte(int(event.acceleration.y*100) >> 8); //MSB second
-  buff[42] = byte(int(event.acceleration.z*100) & 0xFF); //LSB first
-  buff[43] = byte(int(event.acceleration.z*100) >> 8); //MSB second
+  buff[36] = byte(int(event.acceleration.x*100) & 0xFF); //LSB first
+  buff[37] = byte(int(event.acceleration.x*100) >> 8); //MSB second
+  buff[38] = byte(int(event.acceleration.y*100) & 0xFF); //LSB first
+  buff[39] = byte(int(event.acceleration.y*100) >> 8); //MSB second
+  buff[40] = byte(int(event.acceleration.z*100) & 0xFF); //LSB first
+  buff[41] = byte(int(event.acceleration.z*100) >> 8); //MSB second
 }
 
 //Prints out last recevied CAN packet ID for debugging
@@ -134,7 +134,7 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
   }
   else if (ID == 0x0CFFF148) { 
     //Puts byte values into LoRa array
-    for(int x = 0; x < 6; x++){
+    for(int x = 0; x < 4; x++){
       buff[x+6] = MCPBuf[x];
     }
   }
@@ -159,21 +159,21 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     
     //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
-      buff[x+12] = MCPBuf[x+2];
+      buff[x+10] = MCPBuf[x+2];
     }
   }
   
   else if (ID == 0x0CFFF348) {
     //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
-      buff[x+18] = MCPBuf[x];
+      buff[x+16] = MCPBuf[x];
     }
   }
   
   else if (ID == 0x0CFFF448) {
     //Puts byte values into LoRa array
     for(int x = 0; x < 8; x++){
-      buff[x+24] = MCPBuf[x];
+      buff[x+22] = MCPBuf[x];
     }
   }
 
@@ -220,7 +220,7 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
 
     //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
-      buff[x+32] = MCPBuf[x];
+      buff[x+30] = MCPBuf[x];
     }
   }
 }
@@ -272,19 +272,6 @@ bool sendLoRaTestData(int position, int value, RH_RF95 &RF95, int buffSize){
   }
 }
 
-//Sets color on Standard Neopixel
-//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info
-void SetNEO_NEUTRAL(bool val, Adafruit_NeoPixel &NEO){
-  int neoLED = 3; //Index of chained Neopixels
 
-  if(!val){
-    NEO.setPixelColor(neoLED, NEO.Color(0, 0, 255));
-  }
-  else{
-    NEO.setPixelColor(neoLED, NEO.Color(0, 0, 0));
-  }
-
-  NEO.show();
-}
 
 

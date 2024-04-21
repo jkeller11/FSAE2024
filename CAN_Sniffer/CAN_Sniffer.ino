@@ -24,7 +24,7 @@
 #define RFM95_HeaderID 0x22     //ID that Raspi Will check for when reading packet
 #define RFM95_SPREADFACTOR 8    //Spreading Factor Maxx is 12 any higher than 10 does not seem to function
 #define RFM95_TXPOWER 23        //23 is max any higher than 13 can cause serial connection to not work properly
-#define buffSize 44             //Size of LoRa packet -- Array of bytes
+#define buffSize 42             //Size of LoRa packet -- Array of bytes
 
 //Neopixel Parameters
 //See Neopixel library for more info
@@ -32,6 +32,7 @@
 #define STICK_PIN 6
 #define NEO_NUM 5
 #define NEO_PIN 25
+#define neutral 3
 
 //Global Variables for lora array and Dash Values
 byte LoRaBuff[buffSize]; //LoRa Packets
@@ -76,7 +77,16 @@ void setup() {
 void loop() {
 
   //Turns on Neutral Light if Pin 10 is pulled to ground
-  SetNEO_NEUTRAL(digitalRead(10), NEO);
+  if(digitalRead(10) ==LOW){ 
+    NEO.setPixelColor(neutral, NEO.Color(0, 0, 255));
+      
+    NEO.show();
+  }
+  else{
+    NEO.setPixelColor(neutral, NEO.Color(0, 0, 0));
+    NEO.show();
+  }
+
 
   // Check for new CAN packet
   int packetSize = MCP.parsePacket();
