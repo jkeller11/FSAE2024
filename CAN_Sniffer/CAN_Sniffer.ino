@@ -29,9 +29,9 @@
 //Neopixel Parameters
 //See Neopixel library for more info
 #define STICK_NUM 8
-#define STICK_PIN 6
-#define NEO_NUM 5
-#define NEO_PIN 25
+#define STICK_PIN 24
+#define NEO_NUM 4
+#define NEO_PIN 5
 #define neutral 3
 
 //Global Variables for lora array and Dash Values
@@ -48,27 +48,27 @@ RH_RF95 RF95(RFM95_CS, RFM95_INT);
 Adafruit_ADXL345_Unified ACCEL = Adafruit_ADXL345_Unified(12345);
 
 //Create Neopixel Objects
-Adafruit_NeoPixel STICK(STICK_NUM, STICK_PIN, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel NEO(NEO_NUM, NEO_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel STICK(STICK_NUM, STICK_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   //Pins for checking if data collection is 'ON' and neutral light
   pinMode(13,OUTPUT);
   pinMode(12,INPUT_PULLUP);
-  digitalWrite(13, LOW);
   pinMode(10,INPUT_PULLUP);
-
+  digitalWrite(13, LOW);
+  
   // INITIALIZE NeoPixel objects
   STICK.begin();
   NEO.begin();
 
   //Set Neopixels Max Brightness to 50%
-  STICK.setBrightness(25);
-  NEO.setBrightness(25);
+  STICK.setBrightness(35);
+  NEO.setBrightness(90);
 
   //Start Serial, MCP2515 (CAN), ADXL345 (Accelerometer), RFM95 (LoRa)
   Serial.begin(9600);
-  //while (!Serial) delay(1000);
+  while (!Serial) delay(1000);
   while (!startCAN(CAN_CS, CAN_BAUDRATE, MCP)) {while (1);}
   while (!startLoRa(RFM95_FREQ, RF95, RFM95_SPREADFACTOR, RFM95_TXPOWER, RFM95_CODINGRATE, RFM95_BANDWIDTH, RFM95_HeaderID)) {while (1);}
   while (!startADXL345(ACCEL)) {while (1);}
@@ -77,15 +77,13 @@ void setup() {
 void loop() {
 
   //Turns on Neutral Light if Pin 10 is pulled to ground
-  if(digitalRead(10) ==LOW){ 
-    NEO.setPixelColor(neutral, NEO.Color(0, 0, 255));
-      
-    NEO.show();
+  if(digitalRead(10) == LOW){ 
+    NEO.setPixelColor(3, NEO.Color(0, 0, 255));
   }
   else{
     NEO.setPixelColor(neutral, NEO.Color(0, 0, 0));
-    NEO.show();
   }
+  NEO.show();
 
 
   // Check for new CAN packet
@@ -104,7 +102,7 @@ void loop() {
     //Sends LoRaBuff Array to raspberry PI
     sendLoRa(LoRaBuff, RF95, buffSize);
     //Serial.println("Sent");
-
+  }
     //For Debugging execution Time
     // unsigned long StartTime = millis();
     // //Sends LoRaBuff Array to raspberry PI Comment out for normal use
@@ -114,6 +112,6 @@ void loop() {
     //   //Serial.println("Packet Sent");
     //   Serial.print("Time:"); Serial.println(millis() - StartTime);
     // }
-  }
+  //}
   
 }
