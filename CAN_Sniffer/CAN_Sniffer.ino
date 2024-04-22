@@ -85,7 +85,6 @@ void loop() {
   }
   NEO.show();
 
-
   // Check for new CAN packet
   int packetSize = MCP.parsePacket();
 
@@ -101,17 +100,5 @@ void loop() {
 
     //Sends LoRaBuff Array to raspberry PI
     sendLoRa(LoRaBuff, RF95, buffSize);
-    //Serial.println("Sent");
   }
-    //For Debugging execution Time
-    // unsigned long StartTime = millis();
-    // //Sends LoRaBuff Array to raspberry PI Comment out for normal use
-    // if (!sendLoRa(LoRaBuff, RF95, buffSize)) {
-    //   Serial.println("Faild to Send");
-    // } else {
-    //   //Serial.println("Packet Sent");
-    //   Serial.print("Time:"); Serial.println(millis() - StartTime);
-    // }
-  //}
-  
 }
