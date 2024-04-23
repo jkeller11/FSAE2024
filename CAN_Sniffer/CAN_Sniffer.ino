@@ -1,3 +1,8 @@
+//Author: Duncan Keller
+//Creation Date: 1/18/24
+//Purpose of Code: Parse CAN Data from PE3 ECU packitize data and send over LoRa to another Node. Also Handles setting sevearl
+//Neopixels for cars dashboard
+
 //See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info on program specifics
 #include <Adafruit_MCP2515.h>
 #include <Adafruit_Sensor.h>
@@ -62,7 +67,7 @@ void setup() {
   STICK.begin();
   NEO.begin();
 
-  //Set Neopixels Max Brightness to 50%
+  //Set Neopixels Max Brightness
   STICK.setBrightness(35);
   NEO.setBrightness(90);
 
@@ -74,11 +79,12 @@ void setup() {
   while (!startADXL345(ACCEL)) {while (1);}
 }
 
+//Begin main Program
 void loop() {
 
   //Turns on Neutral Light if Pin 10 is pulled to ground
   if(digitalRead(10) == LOW){ 
-    NEO.setPixelColor(3, NEO.Color(0, 0, 255));
+    NEO.setPixelColor(neutral, NEO.Color(0, 0, 255));
   }
   else{
     NEO.setPixelColor(neutral, NEO.Color(0, 0, 0));
