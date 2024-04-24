@@ -34,14 +34,15 @@
 //Neopixel Parameters
 //See Neopixel library for more info
 #define STICK_NUM 8
-#define STICK_PIN 24
+#define STICK_PIN 5
 #define NEO_NUM 4
-#define NEO_PIN 5
+#define NEO_PIN 24
 #define neutral 3
 
 //Global Variables for lora array and Dash Values
 byte LoRaBuff[buffSize]; //LoRa Packets
 float RPM, BattVoltage, OilPressure, EngineCoolant = 0;
+bool neutralOn = false;
 
 //Create MCP object
 Adafruit_MCP2515 MCP(CAN_CS);
@@ -72,8 +73,7 @@ void setup() {
   NEO.setBrightness(90);
 
   //Start Serial, MCP2515 (CAN), ADXL345 (Accelerometer), RFM95 (LoRa)
-  Serial.begin(9600);
-  while (!Serial) delay(1000);
+  //Serial.begin(9600);
   while (!startCAN(CAN_CS, CAN_BAUDRATE, MCP)) {while (1);}
   while (!startLoRa(RFM95_FREQ, RF95, RFM95_SPREADFACTOR, RFM95_TXPOWER, RFM95_CODINGRATE, RFM95_BANDWIDTH, RFM95_HeaderID)) {while (1);}
   while (!startADXL345(ACCEL)) {while (1);}
@@ -84,12 +84,15 @@ void loop() {
 
   //Turns on Neutral Light if Pin 10 is pulled to ground
   if(digitalRead(10) == LOW){ 
-    NEO.setPixelColor(neutral, NEO.Color(0, 0, 255));
+    NEO.setPixelColor(neutral,0,0,255);
+    NEO.show();
+    neutralOn = true;
   }
-  else{
-    NEO.setPixelColor(neutral, NEO.Color(0, 0, 0));
+  else if(neutralOn){
+    NEO.setPixelColor(neutral,0, 0, 0);
+    NEO.show();
+    neutralOn == false;
   }
-  NEO.show();
 
   // Check for new CAN packet
   int packetSize = MCP.parsePacket();

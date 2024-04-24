@@ -8,11 +8,11 @@ bool startCAN(int CS_PIN, long baudRate, Adafruit_MCP2515 &MCP){
   //Attempts start 10 times until timeout
   for(int x = 0; x < 10; x++){
     if(!MCP.begin(baudRate)){
-      Serial.println("Error initializing MCP2515.");
+      //Serial.println("Error initializing MCP2515.");
       delay(1000);
     }
     else{
-      Serial.println("MCP2515 chip found");
+      //Serial.println("MCP2515 chip found");
       return true;
     }
   }
@@ -27,11 +27,11 @@ bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower, 
   
   for(int x = 0; x < 10; x++){
     if (!RF95.init()) {
-      Serial.println("LoRa module initialization failed");
+      //Serial.println("LoRa module initialization failed");
       delay(1000);
     }
     else{
-      Serial.println("LoRa module initialization Successful");
+      //Serial.println("LoRa module initialization Successful");
 
       //Set Parameters of RFM95 module
       RF95.setFrequency(freq);
@@ -44,7 +44,7 @@ bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower, 
       return true;
     }
   }
-  Serial.println("RFM95 Not Found");
+ // Serial.println("RFM95 Not Found");
   return false;
 }
 
@@ -52,18 +52,18 @@ bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower, 
 bool startADXL345(Adafruit_ADXL345_Unified &ACCEL){
   for(int x = 0; x < 10; x++){
     if (!ACCEL.begin()) {
-      Serial.println("ADXL345 initialization failed");
+      //Serial.println("ADXL345 initialization failed");
       delay(1000);
     }
     else{
-      Serial.println("ADXL345 initialization Successful");
+      //Serial.println("ADXL345 initialization Successful");
 
       //Set G Range for ADX345
       ACCEL.setRange(ADXL345_RANGE_8_G);
       return true;
     }
   }
-  Serial.println("ADXL345 Not Found");
+  //Serial.println("ADXL345 Not Found");
   return false;
 }
 
@@ -121,7 +121,7 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
 
     //Sets Neopixels on Stick based on RPM value
     for(int x = 0; x <= rpm; x++){
-      STICK.setPixelColor(x, STICK.Color(255, 0, 0));
+      STICK.setPixelColor(x,255,0,0);
     }
     
     // Send the updated pixel colors to the neopixel
@@ -150,10 +150,10 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     float val = ((OilPressure/1000) * 25) - 12.5;  //Calc real value read from CAN and convert to PSI
 
     if(val >= 10){
-      NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
+      NEO.setPixelColor(neoLED,0,255,0);
     }
     else{
-      NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
+      NEO.setPixelColor(neoLED,255,0,0);
     }
     NEO.show();
     
@@ -189,13 +189,13 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     float val = BattVoltage/100;  //Calc real value read from CAN
 
     if(val >= 12){
-      NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
+      NEO.setPixelColor(neoLED,0,255,0);
     }
     else if(val >= 11.8){
-      NEO.setPixelColor(neoLED, NEO.Color(255, 172, 28));
+      NEO.setPixelColor(neoLED,255,172,28);
     }
     else{
-      NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
+      NEO.setPixelColor(neoLED,255,0,0);
     }
 
     EngineCoolant = (MCPBuf[5] << 8) + MCPBuf[4];  
@@ -208,13 +208,13 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     val = EngineCoolant/10;  //Calc real value read from CAN
 
     if(val > 190){
-      NEO.setPixelColor(neoLED, NEO.Color(255, 0, 0));
+      NEO.setPixelColor(neoLED,255,0,0);
     }
     else if(val >= 150){
-      NEO.setPixelColor(neoLED, NEO.Color(0, 255, 0));
+      NEO.setPixelColor(neoLED,0,255,0);
     }
     else{
-      NEO.setPixelColor(neoLED, NEO.Color(0, 0, 255));
+      NEO.setPixelColor(neoLED,0,0,255);
     }
     NEO.show(); 
 
