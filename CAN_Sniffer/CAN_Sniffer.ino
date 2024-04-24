@@ -3,7 +3,7 @@
 //Purpose of Code: Parse CAN Data from PE3 ECU packitize data and send over LoRa to another Node. Also Handles setting sevearl
 //Neopixels for cars dashboard
 
-//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info on program specifics
+//See Packet_Layout_SQLite_Sensor_Pinout.xlsx for more info on LoRa Packet specifics as well as tech report
 #include <Adafruit_MCP2515.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_ADXL345_U.h>
