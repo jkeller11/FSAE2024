@@ -17,7 +17,7 @@ bool startCAN(int CS_PIN, long baudRate, Adafruit_MCP2515 &MCP){
     }
   }
 
-  Serial.println("MCP2515 Not Found");
+  //Serial.println("MCP2515 Not Found");
   return false;
 }
 
@@ -271,7 +271,3 @@ bool sendLoRaTestData(int position, int value, RH_RF95 &RF95, int buffSize){
     return false;
   }
 }
-
-
-
-
