@@ -70,7 +70,7 @@ void setup() {
 
   //Set Neopixels Max Brightness
   STICK.setBrightness(35);
-  NEO.setBrightness(90);
+  NEO.setBrightness(100);
 
   //Start Serial, MCP2515 (CAN), ADXL345 (Accelerometer), RFM95 (LoRa)
   //Serial.begin(9600);
@@ -84,7 +84,7 @@ void loop() {
 
   //Turns on Neutral Light if Pin 10 is pulled to ground
   if(digitalRead(10) == LOW){ 
-    NEO.setPixelColor(neutral,0,0,255);
+    NEO.setPixelColor(neutral,255,0,0);
     NEO.show();
     neutralOn = true;
   }

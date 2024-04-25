@@ -114,7 +114,9 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     RPM = (MCPBuf[1] << 8) + MCPBuf[0];  //Parse RPM for tachometer
     
     //Sets Neopixel Stick based on New RPM Value
-    STICK.clear(); // Set all pixel colors to 'off'
+    for(int x = 0; x < 8; x++){
+      STICK.setPixelColor(x,0,0,0);
+    }
 
     //Calculate number of LEDS to turn on
     float rpm = (RPM - 1800) / 1300;
@@ -146,14 +148,13 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     }
 
     //Sets Neopixel based on new value
-    int neoLED = 1; //Index of chained Neopixel
     float val = ((OilPressure/1000) * 25) - 12.5;  //Calc real value read from CAN and convert to PSI
 
     if(val >= 10){
-      NEO.setPixelColor(neoLED,0,255,0);
+      NEO.setPixelColor(1,0,255,0);
     }
     else{
-      NEO.setPixelColor(neoLED,255,0,0);
+      NEO.setPixelColor(1,255,0,0);
     }
     NEO.show();
     
@@ -185,17 +186,16 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     }
 
     //Sets Neopixel based on new value
-    int neoLED = 0; //Index of chained Neopixel
     float val = BattVoltage/100;  //Calc real value read from CAN
 
     if(val >= 12){
-      NEO.setPixelColor(neoLED,0,255,0);
+      NEO.setPixelColor(0,0,255,0);
     }
     else if(val >= 11.8){
-      NEO.setPixelColor(neoLED,255,172,28);
+      NEO.setPixelColor(0,255,172,28);
     }
     else{
-      NEO.setPixelColor(neoLED,255,0,0);
+      NEO.setPixelColor(0,255,0,0);
     }
 
     EngineCoolant = (MCPBuf[5] << 8) + MCPBuf[4];  
@@ -204,17 +204,16 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     }
 
     //Sets Neopixel based on new value
-    neoLED = 2; //Index of chained Neopixel
     val = EngineCoolant/10;  //Calc real value read from CAN
 
     if(val > 190){
-      NEO.setPixelColor(neoLED,255,0,0);
+      NEO.setPixelColor(2,255,0,0);
     }
     else if(val >= 150){
-      NEO.setPixelColor(neoLED,0,255,0);
+      NEO.setPixelColor(2,0,255,0);
     }
     else{
-      NEO.setPixelColor(neoLED,0,0,255);
+      NEO.setPixelColor(2,0,0,255);
     }
     NEO.show(); 
 
