@@ -3,7 +3,7 @@ bool startCAN(int CS_PIN, long baudRate, Adafruit_MCP2515 &MCP){
 
   //Set MCP filter for the IDs used acording to PE3 Documentation on CAN Protocol
   // Checks if 12th bit is zero or allows values <= 7
-  MCP.filterExtended(0x0000000,0x00000800); 
+  //MCP.filterExtended(0x0000000,0x00000800); 
 
   //Attempts start 10 times until timeout
   for(int x = 0; x < 10; x++){
@@ -112,20 +112,22 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
   //RPM
   if (ID == 0x0CFFF048) { 
     RPM = (MCPBuf[1] << 8) + MCPBuf[0];  //Parse RPM for tachometer
-    
-    //Sets Neopixel Stick based on New RPM Value
-    for(int x = 0; x < 8; x++){
-      STICK.setPixelColor(x,0,0,0);
-    }
 
     //Calculate number of LEDS to turn on
     float rpm = (RPM - 1800) / 1300;
+    int on_count = 0;
 
     //Sets Neopixels on Stick based on RPM value
     for(int x = 0; x <= rpm; x++){
       STICK.setPixelColor(x,255,0,0);
+      on_count++;
     }
-    
+
+    //Turns off remaining neopixels
+    for(x = on_count + 1; x < 8; x++){
+      STICK.setPixelColor(x,0,0,0);
+    }
+
     // Send the updated pixel colors to the neopixel
     STICK.show(); 
     
