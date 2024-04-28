@@ -124,7 +124,7 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     }
 
     //Turns off remaining neopixels
-    for(x = on_count + 1; x < 8; x++){
+    for(int x = on_count + 1; x < 8; x++){
       STICK.setPixelColor(x,0,0,0);
     }
 
