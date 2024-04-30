@@ -152,13 +152,19 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     //Sets Neopixel based on new value
     float val = ((OilPressure/1000) * 25) - 12.5;  //Calc real value read from CAN and convert to PSI
 
-    if(val >= 10){
+    if(val >= 20){
       NEO.setPixelColor(1,0,255,0);
+    }
+    else if(val >= 10){
+      NEO.setPixelColor(1,255,172,28);
     }
     else{
       NEO.setPixelColor(1,255,0,0);
     }
     NEO.show();
+
+    Serial.print("OIL:");
+    Serial.println(val);
     
     //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
@@ -200,6 +206,11 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
       NEO.setPixelColor(0,255,0,0);
     }
 
+    NEO.show(); 
+
+    Serial.print("Battery:");
+    Serial.println(val);
+
     EngineCoolant = (MCPBuf[5] << 8) + MCPBuf[4];  
     if(EngineCoolant > 32767){                      //signed int convserion
       EngineCoolant = EngineCoolant - 65536;
@@ -218,6 +229,9 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
       NEO.setPixelColor(2,0,0,255);
     }
     NEO.show(); 
+
+    Serial.print("Coolant:");
+    Serial.println(val);
 
     //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){

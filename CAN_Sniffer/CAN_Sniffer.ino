@@ -73,7 +73,7 @@ void setup() {
   NEO.setBrightness(100);
 
   //Start Serial, MCP2515 (CAN), ADXL345 (Accelerometer), RFM95 (LoRa)
-  //Serial.begin(9600);
+  Serial.begin(9600);
   while (!startCAN(CAN_CS, CAN_BAUDRATE, MCP)) {while (1);}
   while (!startLoRa(RFM95_FREQ, RF95, RFM95_SPREADFACTOR, RFM95_TXPOWER, RFM95_CODINGRATE, RFM95_BANDWIDTH, RFM95_HeaderID)) {while (1);}
   while (!startADXL345(ACCEL)) {while (1);}
