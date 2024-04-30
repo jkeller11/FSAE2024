@@ -219,7 +219,7 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     //Sets Neopixel based on new value
     val = EngineCoolant/10;  //Calc real value read from CAN
 
-    if(val > 190){
+    if(val > 200){
       NEO.setPixelColor(2,255,0,0);
     }
     else if(val >= 150){
