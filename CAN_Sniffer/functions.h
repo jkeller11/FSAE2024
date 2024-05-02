@@ -1,23 +1,19 @@
 //Attempts to configure and start MCP2515
 bool startCAN(int CS_PIN, long baudRate, Adafruit_MCP2515 &MCP){
 
-  //Set MCP filter for the IDs used acording to PE3 Documentation on CAN Protocol
-  // Checks if 12th bit is zero or allows values <= 7
-  //MCP.filterExtended(0x0000000,0x00000800); 
-
   //Attempts start 10 times until timeout
   for(int x = 0; x < 10; x++){
     if(!MCP.begin(baudRate)){
-      //Serial.println("Error initializing MCP2515.");
+      Serial.println("Error initializing MCP2515.");
       delay(1000);
     }
     else{
-      //Serial.println("MCP2515 chip found");
+      Serial.println("MCP2515 chip found");
       return true;
     }
   }
 
-  //Serial.println("MCP2515 Not Found");
+  Serial.println("MCP2515 Not Found");
   return false;
 }
 
@@ -26,12 +22,13 @@ bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower, 
   
   
   for(int x = 0; x < 10; x++){
-    if (!RF95.init()) {
-      //Serial.println("LoRa module initialization failed");
+    bool lora = RF95.init();
+    if (!lora) {
+      Serial.println("LoRa module initialization failed");
       delay(1000);
     }
     else{
-      //Serial.println("LoRa module initialization Successful");
+      Serial.println("LoRa module initialization Successful");
 
       //Set Parameters of RFM95 module
       RF95.setFrequency(freq);
@@ -44,7 +41,7 @@ bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower, 
       return true;
     }
   }
- // Serial.println("RFM95 Not Found");
+  Serial.println("RFM95 Not Found");
   return false;
 }
 
@@ -52,18 +49,18 @@ bool startLoRa(long freq, RH_RF95 &RF95, uint8_t spreadFactor, uint8_t TxPower, 
 bool startADXL345(Adafruit_ADXL345_Unified &ACCEL){
   for(int x = 0; x < 10; x++){
     if (!ACCEL.begin()) {
-      //Serial.println("ADXL345 initialization failed");
+      Serial.println("ADXL345 initialization failed");
       delay(1000);
     }
     else{
-      //Serial.println("ADXL345 initialization Successful");
+      Serial.println("ADXL345 initialization Successful");
 
       //Set G Range for ADX345
       ACCEL.setRange(ADXL345_RANGE_8_G);
       return true;
     }
   }
-  //Serial.println("ADXL345 Not Found");
+  Serial.println("ADXL345 Not Found");
   return false;
 }
 
@@ -87,12 +84,12 @@ void readADXL345(byte buff[], Adafruit_ADXL345_Unified &ACCEL){
   ACCEL.getEvent(&event);
 
   //Convert and push accerlation values to LoRa Buffer Array
-  buff[36] = byte(int(event.acceleration.x*100) & 0xFF); //LSB first
-  buff[37] = byte(int(event.acceleration.x*100) >> 8); //MSB second
-  buff[38] = byte(int(event.acceleration.y*100) & 0xFF); //LSB first
-  buff[39] = byte(int(event.acceleration.y*100) >> 8); //MSB second
-  buff[40] = byte(int(event.acceleration.z*100) & 0xFF); //LSB first
-  buff[41] = byte(int(event.acceleration.z*100) >> 8); //MSB second
+  buff[32] = byte(int(event.acceleration.x*100) & 0xFF); //LSB first
+  buff[33] = byte(int(event.acceleration.x*100) >> 8); //MSB second
+  buff[34] = byte(int(event.acceleration.y*100) & 0xFF); //LSB first
+  buff[35] = byte(int(event.acceleration.y*100) >> 8); //MSB second
+  buff[36] = byte(int(event.acceleration.z*100) & 0xFF); //LSB first
+  buff[37] = byte(int(event.acceleration.z*100) >> 8); //MSB second
 }
 
 //Prints out last recevied CAN packet ID for debugging
@@ -103,7 +100,7 @@ void printCANID(Adafruit_MCP2515 &MCP){
 
 //Reads CAN data for dash data and store it in the array parameter
 //Also Sets Neopixels when value is Set
-void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage, float &OilPressure, float &EngineCoolant, int packetSize, Adafruit_NeoPixel &NEO, Adafruit_NeoPixel &STICK){
+void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage, float &OilPressure, float &EngineCoolant, int packetSize, Adafruit_NeoPixel &NEO){//, Adafruit_NeoPixel &STICK){
   byte MCPBuf[8]; //Temp buffer array
 
   MCP.readBytes(MCPBuf, packetSize);      // Parse packetsize of bytes into MCPBuf STORED [LowByte, HighByte]
@@ -113,33 +110,33 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
   if (ID == 0x0CFFF048) { 
     RPM = (MCPBuf[1] << 8) + MCPBuf[0];  //Parse RPM for tachometer
 
-    //Calculate number of LEDS to turn on
-    float rpm = (RPM - 1800) / 1300;
-    int on_count = 0;
+    // //Calculate number of LEDS to turn on
+    // float rpm = (RPM - 1800) / 1300;
+    // int on_count = 0;
 
-    //Sets Neopixels on Stick based on RPM value
-    for(int x = 0; x <= rpm; x++){
-      STICK.setPixelColor(x,255,0,0);
-      on_count++;
-    }
+    // //Sets Neopixels on Stick based on RPM value
+    // for(int x = 0; x <= rpm; x++){
+    //   STICK.setPixelColor(x,255,0,0);
+    //   on_count++;
+    // }
 
-    //Turns off remaining neopixels
-    for(int x = on_count + 1; x < 8; x++){
-      STICK.setPixelColor(x,0,0,0);
-    }
+    // //Turns off remaining neopixels
+    // for(int x = on_count + 1; x < 8; x++){
+    //   STICK.setPixelColor(x,0,0,0);
+    // }
 
-    // Send the updated pixel colors to the neopixel
-    STICK.show(); 
+    // // Send the updated pixel colors to the neopixel
+    // STICK.show(); 
     
     //Puts byte values into LoRa array
-    for(int x = 0; x < 6; x++){
+    for(int x = 0; x < 4; x++){
       buff[x] = MCPBuf[x];
     }
   }
   else if (ID == 0x0CFFF148) { 
     //Puts byte values into LoRa array
-    for(int x = 0; x < 4; x++){
-      buff[x+6] = MCPBuf[x];
+    for(int x = 0; x < 2; x++){
+      buff[x+4] = MCPBuf[x+2];
     }
   }
   
@@ -168,21 +165,21 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
     
     //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
-      buff[x+10] = MCPBuf[x+2];
+      buff[x+6] = MCPBuf[x+2];
     }
   }
   
   else if (ID == 0x0CFFF348) {
     //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
-      buff[x+16] = MCPBuf[x];
+      buff[x+12] = MCPBuf[x];
     }
   }
   
   else if (ID == 0x0CFFF448) {
     //Puts byte values into LoRa array
     for(int x = 0; x < 8; x++){
-      buff[x+22] = MCPBuf[x];
+      buff[x+18] = MCPBuf[x];
     }
   }
 
@@ -235,7 +232,7 @@ void readCAN(byte buff[], Adafruit_MCP2515 &MCP, float &RPM, float &BattVoltage,
 
     //Puts byte values into LoRa array
     for(int x = 0; x < 6; x++){
-      buff[x+30] = MCPBuf[x];
+      buff[x+26] = MCPBuf[x];
     }
   }
 }

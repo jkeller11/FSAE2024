@@ -21,6 +21,21 @@ byte canMsg6[8] = {byte(0 & 0xFF), byte(0 >> 8), byte(0 & 0xFF), byte(0 >> 8), b
 byte canMsg7[8] = {byte(0 & 0xFF), byte(0 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
 
 
+byte RPM1[8] = {byte(1000 & 0xFF), byte(1000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM2[8] = {byte(2000 & 0xFF), byte(2000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM3[8] = {byte(3000 & 0xFF), byte(3000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM4[8] = {byte(4000 & 0xFF), byte(4000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM5[8] = {byte(5000 & 0xFF), byte(5000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM6[8] = {byte(6000 & 0xFF), byte(6000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM7[8] = {byte(7000 & 0xFF), byte(7000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM8[8] = {byte(8000 & 0xFF), byte(8000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM9[8] = {byte(9000 & 0xFF), byte(9000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM10[8] = {byte(10000 & 0xFF), byte(10000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM11[8] = {byte(11000 & 0xFF), byte(11000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM12[8] = {byte(12000 & 0xFF), byte(12000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+byte RPM13[8] = {byte(13000 & 0xFF), byte(13000 >> 8), byte(0 & 0xFF), byte(0 >> 8), byte(1500 & 0xFF), byte(1500 >> 8), byte(0 & 0xFF), byte(0 >> 8)};
+
+
 MCP_CAN CAN0(SPI_PIN);
 
 
@@ -41,64 +56,60 @@ void setup() {
 }
 
 void loop() {
+  // //Bat Volt
+  // CAN0.sendMsgBuf(PE6, 1, 8, canMsg2);
+  // delay(3000);
+  // CAN0.sendMsgBuf(PE6, 1, 8, canMsg3);
+  // delay(3000);
+  // CAN0.sendMsgBuf(PE6, 1, 8, canMsg1);
+  // delay(3000);
 
-  //See PE3 CAN Bus Protocol for info on IDs and data
-  //CAN message data values scaled acording to resolution 
-  //EX analog #1 is 0 to 5 but with a resolution of 0.001 so 5123 would be 5.123
-  //CAN0.sendMsgBuf(PE1, 1, 8, canMsg1);                 //RPM,TPS,Fuel Open Time and Ignition Angle                          
-  //CAN0.sendMsgBuf(PE2, 1, 8, canMsg1);                 //Barometer, MAP, Lambda and Pressure Type
-  //CAN0.sendMsgBuf(PE3, 1, 8, canMsg1);                 //Analog Inputs 1-4
-  //CAN0.sendMsgBuf(PE4, 1, 8, canMsg1);                 //Analog Inputs 5-8
-  //CAN0.sendMsgBuf(PE5, 1, 8, canMsg1);                 //Wheel Speed Freq 1-4
-  //CAN0.sendMsgBuf(PE6, 1, 8, canMsg1);                 //Battery Voltage, Air Temp, Coolant Temp and Temp Type
-  //delay(1000);
+  // //Coolant temp
+  // CAN0.sendMsgBuf(PE6, 1, 8, canMsg6);
+  // delay(3000);
+  // CAN0.sendMsgBuf(PE6, 1, 8, canMsg7);
+  // delay(3000);
+  // CAN0.sendMsgBuf(PE6, 1, 8, canMsg1);
+  // delay(3000);
 
-  //Bat Volt
-  CAN0.sendMsgBuf(PE6, 1, 8, canMsg2);
-  delay(3000);
-  CAN0.sendMsgBuf(PE6, 1, 8, canMsg3);
-  delay(3000);
-  CAN0.sendMsgBuf(PE6, 1, 8, canMsg1);
-  delay(3000);
+  // //Oil Pressure
+  // CAN0.sendMsgBuf(PE3, 1, 8, canMsg4);
+  // delay(3000);
+  // CAN0.sendMsgBuf(PE3, 1, 8, canMsg5);
+  // delay(3000);
+  // CAN0.sendMsgBuf(PE3, 1, 8, canMsg1);
+  // delay(3000);
 
-  //Coolant temp
-  CAN0.sendMsgBuf(PE6, 1, 8, canMsg6);
-  delay(3000);
-  CAN0.sendMsgBuf(PE6, 1, 8, canMsg7);
-  delay(3000);
-  CAN0.sendMsgBuf(PE6, 1, 8, canMsg1);
-  delay(3000);
+  // delay(5000);
 
-  //Oil Pressure
-  CAN0.sendMsgBuf(PE3, 1, 8, canMsg4);
+  //RPM
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM1);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM2);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM3);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM4);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM5);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM6);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM7);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM8);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM9);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM10);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM11);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM12);
+  delay(100);
+  CAN0.sendMsgBuf(PE1, 1, 8, RPM13);
   delay(3000);
-  CAN0.sendMsgBuf(PE3, 1, 8, canMsg5);
-  delay(3000);
-  CAN0.sendMsgBuf(PE3, 1, 8, canMsg1);
-  delay(3000);
-
-  delay(5000);
-
-  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg2);
-  // delay(100);
-  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg3);
-  // delay(100);
-  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg4);
-  // delay(100);
-  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg5);
-  // delay(100);
-  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg6);
-  // delay(100);
-  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg7);
-  // delay(100);
-  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg8);
-  // delay(100);
-  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg9);
-  // delay(100);
-  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg10);
-  // delay(100);
-  // CAN0.sendMsgBuf(PE1, 1, 8, canMsg11);
-  // delay(100);
+  
 
 
 

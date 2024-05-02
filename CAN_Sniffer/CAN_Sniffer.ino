@@ -24,12 +24,12 @@
 #define RFM95_INT 21
 #define RFM95_RST 17
 #define RFM95_FREQ 915.0          
-#define RFM95_CODINGRATE 8
-#define RFM95_BANDWIDTH 250000
+#define RFM95_CODINGRATE 5
+#define RFM95_BANDWIDTH 125000
 #define RFM95_HeaderID 0x22     //ID that Raspi Will check for when reading packet
-#define RFM95_SPREADFACTOR 8    //Spreading Factor Maxx is 12 any higher than 10 does not seem to function
+#define RFM95_SPREADFACTOR 7    //Spreading Factor Maxx is 12 any higher than 10 does not seem to function
 #define RFM95_TXPOWER 23        //23 is max any higher than 13 can cause serial connection to not work properly
-#define buffSize 42             //Size of LoRa packet -- Array of bytes
+#define buffSize 38             //Size of LoRa packet -- Array of bytes
 
 //Neopixel Parameters
 //See Neopixel library for more info
@@ -55,7 +55,7 @@ Adafruit_ADXL345_Unified ACCEL = Adafruit_ADXL345_Unified(12345);
 
 //Create Neopixel Objects
 Adafruit_NeoPixel NEO(NEO_NUM, NEO_PIN, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel STICK(STICK_NUM, STICK_PIN, NEO_GRB + NEO_KHZ800);
+//Adafruit_NeoPixel STICK(STICK_NUM, STICK_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   //Pins for checking if data collection is 'ON' and neutral light
@@ -65,18 +65,18 @@ void setup() {
   digitalWrite(13, LOW);
   
   // INITIALIZE NeoPixel objects
-  STICK.begin();
+  //STICK.begin();
   NEO.begin();
 
   //Set Neopixels Max Brightness
-  STICK.setBrightness(35);
+  //STICK.setBrightness(35);
   NEO.setBrightness(100);
 
   //Start Serial, MCP2515 (CAN), ADXL345 (Accelerometer), RFM95 (LoRa)
   Serial.begin(9600);
   while (!startCAN(CAN_CS, CAN_BAUDRATE, MCP)) {while (1);}
   while (!startLoRa(RFM95_FREQ, RF95, RFM95_SPREADFACTOR, RFM95_TXPOWER, RFM95_CODINGRATE, RFM95_BANDWIDTH, RFM95_HeaderID)) {while (1);}
-  while (!startADXL345(ACCEL)) {while (1);}
+  startADXL345(ACCEL);
 }
 
 //Begin main Program
@@ -99,7 +99,7 @@ void loop() {
 
   if(packetSize){
     // received a packet read and add to LoRaBuff as well as set neopixels
-    readCAN(LoRaBuff, MCP, RPM, BattVoltage, OilPressure, EngineCoolant, packetSize, NEO, STICK);
+    readCAN(LoRaBuff, MCP, RPM, BattVoltage, OilPressure, EngineCoolant, packetSize, NEO);//, STICK);
   }
 
   //For Data collection switch on dashboard
